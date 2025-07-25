@@ -1,9 +1,56 @@
+function updateCategoryCheckboxes() {
+    // 变动后，所有课程类别checkbox都要重新判断
+    $('input[name="x-selbox"]').each(function () {
+        const category = this.value;
+        let allChecked = true;
+        let hasCourse = false;
+        $('table:eq(1) tr:gt(0)').each(function () {
+            if (
+                $(this).find(`td:eq(${COL_INDEX.COURSE_CATEGORY})`).text() === category
+            ) {
+                hasCourse = true;
+                if (!$(this).find(`td:eq(${COL_INDEX.COURSE_CODE}) input[name="x-course-select"]`).prop('checked')) {
+                    allChecked = false;
+                }
+            }
+        });
+        if (hasCourse) {
+            $(this).prop('checked', allChecked);
+        }
+    });
+}
+
+function updateSemCheckboxes() {
+    // 变动后，所有学期checkbox都要重新判断
+    $('input[name="x-sem-checkbox"]').each(function () {
+        const [year, sem] = this.value.split('|');
+        let allChecked = true;
+        let hasCourse = false;
+        $('table:eq(1) tr:gt(0)').each(function () {
+            if (
+                $(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text() === year &&
+                $(this).find(`td:eq(${COL_INDEX.COURSE_SEMESTER})`).text() === sem
+            ) {
+                hasCourse = true;
+                if (!$(this).find(`td:eq(${COL_INDEX.COURSE_CODE}) input[name="x-course-select"]`).prop('checked')) {
+                    allChecked = false;
+                }
+            }
+        });
+        if (hasCourse) {
+            $(this).prop('checked', allChecked);
+        }
+    });
+}
+
 /**
  * 绑定各控件事件
  */
 function bindEvents() {
     // 响应表格中的复选框
     $('input[name="x-course-select"]').change(() => {
+        updateCategoryCheckboxes();
+        updateSemCheckboxes();
         updateAllScores();
     });
 
@@ -30,6 +77,35 @@ function bindEvents() {
                 }
             }
         });
+        updateSemCheckboxes();
+        updateAllScores();
+    });
+
+    // 响应学期全选复选框
+    $('input[name="x-sem-checkbox"]').off('change.sem').on('change.sem', function (e) {
+        const input = e.target;
+        const [year, sem] = input.value.split('|');
+        // 只操作本学期内的课程checkbox
+        $('table:eq(1) tr:gt(0)').each(function () {
+            if (
+                $(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text() === year &&
+                $(this).find(`td:eq(${COL_INDEX.COURSE_SEMESTER})`).text() === sem
+            ) {
+                const scoreText = $.trim(
+                    $(this).find(`td:eq(${COL_INDEX.COURSE_SCORE})`).text()
+                );
+                const checkbox = $(this).find(
+                    `td:eq(${COL_INDEX.COURSE_CODE}) input[name="x-course-select"]`
+                );
+                // 撤销课程（成绩为'W'）永远不被选中
+                if (scoreText === 'W') {
+                    checkbox.prop('checked', false);
+                } else {
+                    checkbox.prop('checked', input.checked);
+                }
+            }
+        });
+        updateCategoryCheckboxes();
         updateAllScores();
     });
 
@@ -50,11 +126,13 @@ function bindEvents() {
                 }
             });
             $('input[name="x-selbox"]').prop('checked', true);
+            $('input[name="x-sem-checkbox"]').prop('checked', true);
             $('#x-sel-all').text('全不选');
         } else {
             // 全不选：取消选中所有课程
             $('input[name="x-course-select"]').prop('checked', false);
             $('input[name="x-selbox"]').prop('checked', false);
+            $('input[name="x-sem-checkbox"]').prop('checked', false);
             $('#x-sel-all').text('全选');
         }
         updateAllScores();
@@ -77,6 +155,8 @@ function bindEvents() {
                 checkbox.prop('checked', !checkbox.is(':checked'));
             }
         });
+        updateCategoryCheckboxes();
+        updateSemCheckboxes();
         updateAllScores();
     });
 
@@ -104,6 +184,7 @@ function bindEvents() {
             }
         });
         $('input[name="x-selbox"]').prop('checked', true);
+        $('input[name="x-sem-checkbox"]').prop('checked', true);
 
         // 清理排序状态并恢复默认配置
         _config.lastClickedColumn = undefined;

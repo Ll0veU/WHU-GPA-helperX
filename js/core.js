@@ -181,14 +181,32 @@ function sortScores() {
             );
             if (time[0] !== year || time[1] !== sem) {
                 let semGPA = calcSemGPA(year, sem);
+                // 生成唯一checkbox id
+                let semId = `x-sem-check-${year}-${sem}`;
+                // 保留3位小数，整数部分宽度为width位，只占位
+                function padIntPart(numStr, width = 3) {
+                    const [intPart, decPart] = numStr.split('.');
+                    // 用空格填充整数部分到width宽度
+                    return intPart.padStart(width, ' ');
+                }
+                const creditRaw = Number(semGPA[0]).toFixed(1);
+                const gpaRaw = Number(semGPA[1]).toFixed(3);
+                const avgScoreRaw = Number(semGPA[2]).toFixed(3);
+                const credit = `${padIntPart(creditRaw, 2)}.${creditRaw.split('.')[1]}`;
+                const gpa = `${padIntPart(gpaRaw, 3)}.${gpaRaw.split('.')[1]}`;
+                const avgScore = `${padIntPart(avgScoreRaw, 3)}.${avgScoreRaw.split('.')[1]}`;
                 $(this).before(`
               <tr class="x-sem-row">
                   <td colspan="${COL_SPAN}" class="x-sem-info">
                   <strong class="x-info-block">
                   <em>${year}</em>&nbsp;学年&nbsp;&nbsp;第&nbsp;<em>${sem}</em>&nbsp;学期&nbsp;&nbsp;&nbsp;&nbsp;
-                  学分数：<span>${semGPA[0]}</span>&nbsp;&nbsp;&nbsp;&nbsp;
-                  平均GPA：<span>${semGPA[1]}</span>&nbsp;&nbsp;&nbsp;&nbsp;
-                  平均成绩：<span>${semGPA[2]}</span>
+                  学分数：<span style="display:inline-block;min-width:6ch;text-align:right;">${credit}</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                  平均GPA：<span style="display:inline-block;min-width:6ch;text-align:right;">${gpa}</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                  平均成绩：<span style="display:inline-block;min-width:6ch;text-align:right;">${avgScore}</span>
+                  <span class="x-check-wrapper">
+                    <label for="${semId}">本学期全选</label>
+                    <input type="checkbox" name="x-sem-checkbox" value="${year}|${sem}" id="${semId}" checked />
+                  </span>
                   </strong>
                   </td>
               </tr>
@@ -199,6 +217,7 @@ function sortScores() {
 
     updateAllScores();
     bindEvents();
+    // setTimeout(bindSemCheckboxEvents, 0); // 确保DOM渲染后再绑定事件
 
     // 同步表头图标显示
     syncHeaderIcons();
