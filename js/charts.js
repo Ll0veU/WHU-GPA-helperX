@@ -30,15 +30,18 @@ function updateStatistics() {
                 `td:eq(${COL_INDEX.COURSE_CATEGORY}), td:eq(${COL_INDEX.COURSE_CREDITS})`
             );
 
-            if (record.length === 0) {
-                // x-sem-row
-                const emArr = $(this).find('em').toArray();
-                const scoreArr = $(this).find('span').toArray();
+            if ($(this).hasClass('x-sem-row')) {
+                // x-sem-row: 直接从.x-info-block内部结构提取
+                const $block = $(this).find('.x-info-block');
+                // 学年学期
+                const [year, sem] = $block.find('strong').toArray().map(el => $(el).text());
+                // 学分、gpa、平均分
+                const [credit, gpa, avgScore] = $block.find('.x-info-detail .x-info-num').toArray().map(el => parseFloat($(el).text()));
                 trendingArray.push([
-                    emArr[0].textContent + '-' + emArr[1].textContent,
-                    parseFloat(scoreArr[0].textContent),
-                    parseFloat(scoreArr[1].textContent),
-                    parseFloat(scoreArr[2].textContent),
+                    year + '-' + sem,
+                    credit,
+                    gpa,
+                    avgScore,
                 ]);
             } else {
                 if (
