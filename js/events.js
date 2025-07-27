@@ -1,3 +1,9 @@
+/**
+ * 更新所有课程类别复选框的选中状态。
+ *
+ * 遍历所有课程类别的复选框，根据每个类别下所有课程的选中状态，更新类别复选框的选中状态。
+ * 如果某类别下所有课程都被选中，则该类别复选框被选中；否则不选中。
+ */
 function updateCategoryCheckboxes() {
     // 变动后，所有课程类别checkbox都要重新判断
     $('input[name="x-selbox"]').each(function () {
@@ -20,6 +26,16 @@ function updateCategoryCheckboxes() {
     });
 }
 
+/**
+ * 更新所有学期复选框的选中状态。
+ *
+ * 遍历每个学期复选框（input[name="x-sem-checkbox"]）：
+ * 1. 解析出对应的学年和学期。
+ * 2. 检查表格中该学年学期的所有课程。
+ * 3. 如果该学期所有课程都被选中，则学期复选框选中；
+ * 4. 如果有任意一门课未被选中，则学期复选框不选中；
+ * 5. 如果该学期没有课程，则不改变复选框状态。
+ */
 function updateSemCheckboxes() {
     // 变动后，所有学期checkbox都要重新判断
     $('input[name="x-sem-checkbox"]').each(function () {

@@ -16,7 +16,7 @@ $.ajaxSetup({
                 faculty = response['items'][0]['jgmc'];
                 fromUpdateGrades = true;
             }
-        } catch (error) {}
+        } catch (error) { }
         return data;
     },
 });
@@ -158,6 +158,31 @@ function customDynamicUI() {
  * 对返回成绩进行重新排序，添加每学期的信息显示栏
  */
 function sortScores() {
+    // 浮动体宽度和位置自适应表格可见宽度
+    setTimeout(() => {
+        const $table = $('table:eq(1)');
+        const $container = $table.parent();
+
+        function updateInfoBlockPos() {
+            const visibleWidth = $container.width();
+            const scrollLeft = $container.scrollLeft();
+            $table.find('.x-info-block').each(function () {
+                const $block = $(this);
+                // 居中显示，宽度为容器的90%
+                const width = visibleWidth * 0.9;
+                const left = scrollLeft + (visibleWidth - width) / 2;
+                $block.css({
+                    left: left + 'px',
+                    width: width + 'px',
+                });
+            });
+        }
+
+        $container.off('.xinfowidth').on('scroll.xinfowidth resize.xinfowidth', updateInfoBlockPos);
+        $(window).off('.xinfowidth').on('resize.xinfowidth', updateInfoBlockPos);
+        updateInfoBlockPos();
+    }, 0);
+
     // 构建完整的排序配置
     const { sortModes, sortOrder } = buildSortConfig();
 
@@ -181,12 +206,10 @@ function sortScores() {
             );
             if (time[0] !== year || time[1] !== sem) {
                 let semGPA = calcSemGPA(year, sem);
-                // 生成唯一checkbox id
                 let semId = `x-sem-check-${year}-${sem}`;
                 // 保留3位小数，整数部分宽度为width位，只占位
                 function padIntPart(numStr, width = 3) {
                     const [intPart, decPart] = numStr.split('.');
-                    // 用空格填充整数部分到width宽度
                     return intPart.padStart(width, ' ');
                 }
                 const creditRaw = Number(semGPA[0]).toFixed(1);
@@ -195,29 +218,21 @@ function sortScores() {
                 const credit = `${padIntPart(creditRaw, 2)}.${creditRaw.split('.')[1]}`;
                 const gpa = `${padIntPart(gpaRaw, 3)}.${gpaRaw.split('.')[1]}`;
                 const avgScore = `${padIntPart(avgScoreRaw, 3)}.${avgScoreRaw.split('.')[1]}`;
-                $(this).before(`
-              <tr class="x-sem-row">
-                  <td colspan="${COL_SPAN}" class="x-sem-info">
-                  <strong class="x-info-block">
-                  <em>${year}</em>&nbsp;学年&nbsp;&nbsp;第&nbsp;<em>${sem}</em>&nbsp;学期&nbsp;&nbsp;&nbsp;&nbsp;
-                  学分数：<span style="display:inline-block;min-width:6ch;text-align:right;">${credit}</span>&nbsp;&nbsp;&nbsp;&nbsp;
-                  平均GPA：<span style="display:inline-block;min-width:6ch;text-align:right;">${gpa}</span>&nbsp;&nbsp;&nbsp;&nbsp;
-                  平均成绩：<span style="display:inline-block;min-width:6ch;text-align:right;">${avgScore}</span>
-                  <span class="x-check-wrapper">
-                    <label for="${semId}">本学期全选</label>
-                    <input type="checkbox" name="x-sem-checkbox" value="${year}|${sem}" id="${semId}" checked />
-                  </span>
-                  </strong>
-                  </td>
-              </tr>
-          `);
+                buildSemInfoRow(
+                    $(this), {
+                    year,
+                    sem,
+                    credit,
+                    gpa,
+                    avgScore,
+                    semId
+                });
             }
             time = [year, sem];
         });
 
     updateAllScores();
     bindEvents();
-    // setTimeout(bindSemCheckboxEvents, 0); // 确保DOM渲染后再绑定事件
 
     // 同步表头图标显示
     syncHeaderIcons();

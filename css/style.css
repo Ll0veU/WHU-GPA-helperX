@@ -106,21 +106,56 @@
 
 .x-sem-info {
     border-bottom: 1px solid #e1e1e1;
-    padding: 4px 15px;
+    padding: 8px 0px;
     border-color: #dddfd7 !important;
 }
 
 .x-info-block {
-    display: inline-block;
-    position: relative;
-    left: calc(50vw - 80px);
-    transform: translateX(-50%);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    position: sticky;
+    left: 8px;
+    z-index: 2;
+    background: #fff;
+    box-shadow: 0.3em 0.3em 1em rgba(0, 0, 0, 0.3);
+    padding: 4px 8px;
 }
 
-.x-info-block span {
+.x-info-block .x-info-detail {
+    display: inline-block;
+    margin: 4px 20px;
+    vertical-align: middle;
+}
+
+.x-info-block .x-info-detail-label {
+    /* color: #0076c1; */
+    font-weight: bold;
+    margin: 0;
+}
+
+.x-info-block .x-info-num {
     color: #0076c1;
     font-weight: bold;
 }
+
+.x-info-block .x-info-check-wrapper {
+    display: inline-block;
+    margin: 4px 20px;
+    vertical-align: middle;
+}
+
+.x-info-block .x-info-check-wrapper label {
+    /* color: #0076c1; */
+    font-weight: bold;
+    margin: 0;
+}
+
+.x-info-block .x-info-check-wrapper input {
+    vertical-align: middle;
+    margin: 0;
+}
+
 
 /*********************************  图表   *************************************/
 .x-overlay {

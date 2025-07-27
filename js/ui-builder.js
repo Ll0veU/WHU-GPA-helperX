@@ -147,3 +147,39 @@ function customStaticUI(catsList) {
         $('input[name="x-selbox"]').prop('checked', true);
     }
 }
+
+/**
+ * 构建学期信息行HTML
+ * @param {jQuery} $row jQuery对象，表示成绩表格的行
+ * @param {Object} opts {year, sem, credit, gpa, avgScore, semId}
+ * @returns {string} HTML字符串
+ */
+function buildSemInfoRow($row, opts) {
+    $row.before(`
+      <tr class="x-sem-row">
+          <td colspan="${COL_SPAN}" class="x-sem-info">
+            <div class="x-info-block">
+              <div class="x-info-detail">
+                <strong>${opts.year}</strong>学年&nbsp;第<strong>${opts.sem}</strong>学期
+              </div>
+              <div class="x-info-detail">
+                <label class="x-info-detail-label">学分数：</label>
+                <span class="x-info-num">${opts.credit}</span>
+              </div>
+              <div class="x-info-detail">
+                <label class="x-info-detail-label">平均GPA：</label>
+                <span class="x-info-num">${opts.gpa}</span>
+              </div>
+              <div class="x-info-detail">
+                <label class="x-info-detail-label">平均成绩：</label>
+                <span class="x-info-num">${opts.avgScore}</span>
+              </div>
+              <div class="x-info-check-wrapper">
+                <label for="${opts.semId}">本学期全选</label>
+                <input type="checkbox" name="x-sem-checkbox" value="${opts.year}|${opts.sem}" id="${opts.semId}" checked />
+              </div>
+            </div>
+          </td>
+      </tr>
+    `);
+}
