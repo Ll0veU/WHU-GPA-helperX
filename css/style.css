@@ -89,9 +89,6 @@
 
 .x-info-wrapper span {
     color: #0076c1;
-}
-
-.x-info-wrapper span {
     font-weight: bold;
 }
 
@@ -120,23 +117,7 @@
     background: #fff;
     box-shadow: 0.3em 0.3em 1em rgba(0, 0, 0, 0.3);
     padding: 4px 8px;
-}
-
-.x-info-block .x-info-detail {
-    display: inline-block;
-    margin: 4px 20px;
-    vertical-align: middle;
-}
-
-.x-info-block .x-info-detail-label {
-    /* color: #0076c1; */
-    font-weight: bold;
-    margin: 0;
-}
-
-.x-info-block .x-info-num {
-    color: #0076c1;
-    font-weight: bold;
+    font-size: 14px;
 }
 
 .x-info-block .x-info-check-wrapper {
@@ -146,7 +127,6 @@
 }
 
 .x-info-block .x-info-check-wrapper label {
-    /* color: #0076c1; */
     font-weight: bold;
     margin: 0;
 }
