@@ -231,6 +231,8 @@ function sortScores() {
             time = [year, sem];
         });
 
+    updateCategoryCheckboxes();
+    updateSemCheckboxes();
     updateAllScores();
     bindEvents();
 
