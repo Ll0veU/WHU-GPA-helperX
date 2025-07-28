@@ -63,14 +63,30 @@ function updateSemCheckboxes() {
  * 绑定各控件事件
  */
 function bindEvents() {
-    // 响应表格中的复选框
+    _bindCourseSelectChangeEvent();
+    _bindSelboxChangeEvent();
+    _bindSemCheckboxChangeEvent();
+    _bindSelAllClickEvent();
+    _bindSelRevClickEvent();
+    _bindSelRevertClickEvent();
+    _bindShowGraphClickEvent();
+    _bindModalClickEvent();
+    _bindIconClickEvent();
+    _bindModalOverlayClickEvent();
+    _bindModalRevertClickEvent();
+}
+
+// 响应表格中的复选框
+function _bindCourseSelectChangeEvent() {
     $('input[name="x-course-select"]').change(() => {
         updateCategoryCheckboxes();
         updateSemCheckboxes();
         updateAllScores();
     });
+}
 
-    // 响应课程类别复选框
+// 响应课程类别复选框
+function _bindSelboxChangeEvent() {
     $('input[name="x-selbox"]').change(e => {
         const input = e.target;
         $('table:eq(1) tr:gt(0)').each(function () {
@@ -96,8 +112,10 @@ function bindEvents() {
         updateSemCheckboxes();
         updateAllScores();
     });
+}
 
-    // 响应学期全选复选框
+// 响应学期全选复选框
+function _bindSemCheckboxChangeEvent() {
     $('input[name="x-sem-checkbox"]').off('change.sem').on('change.sem', function (e) {
         const input = e.target;
         const [year, sem] = input.value.split('|');
@@ -124,8 +142,10 @@ function bindEvents() {
         updateCategoryCheckboxes();
         updateAllScores();
     });
+}
 
-    // 全选/全不选
+// 全选/全不选
+function _bindSelAllClickEvent() {
     $('#x-sel-all').click(() => {
         if ($('input[name="x-course-select"]:checked').length === 0) {
             // 全选时：选中所有非撤销课程（成绩不为'W'的课程）
@@ -153,8 +173,10 @@ function bindEvents() {
         }
         updateAllScores();
     });
+}
 
-    // 反选
+// 反选
+function _bindSelRevClickEvent() {
     $('#x-sel-rev').click(() => {
         let checked = $('input[name="x-course-select"]:checked');
 
@@ -175,8 +197,10 @@ function bindEvents() {
         updateSemCheckboxes();
         updateAllScores();
     });
+}
 
-    // 复原
+// 复原
+function _bindSelRevertClickEvent() {
     $('#x-sel-revert').click(() => {
         $('table:eq(1) tr:gt(0)').each(function () {
             const scoreText = $.trim(
@@ -240,26 +264,40 @@ function bindEvents() {
         updateAllScores();
         sortScores();
     });
+}
 
-    // 图表
+// 图表
+function _bindShowGraphClickEvent() {
     $('#x-show-graph').click(() => {
         $('#x-modal-overlay').addClass('x-open');
         updateStatistics();
         plots = drawStatisticPlot();
     });
-    // 点击modal不关闭overlay
+}
+
+// 点击modal不关闭overlay
+function _bindModalClickEvent() {
     $('.x-modal').click(function (e) {
         e.stopPropagation();
     });
-    // 点击exit icon关闭overlay
+}
+
+// 点击exit icon关闭overlay
+function _bindIconClickEvent() {
     $('.x-icon').click(() => {
         closeModal();
     });
-    // 直接点击overlay
+}
+
+// 直接点击overlay
+function _bindModalOverlayClickEvent() {
     $('#x-modal-overlay').click(function () {
         closeModal();
     });
-    // 点击modal上的复原按钮将课程选项更新，并重新绘图
+}
+
+// 点击modal上的复原按钮将课程选项更新，并重新绘图
+function _bindModalRevertClickEvent() {
     $('#x-revert').click(() => {
         $('#x-sel-revert').trigger('click');
         updateStatistics();
