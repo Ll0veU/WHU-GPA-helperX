@@ -114,6 +114,51 @@ function addHeaderPanel() {
 }
 
 /**
+ * 加入学期成绩信息行
+ */
+function addSemInfoRow() {
+    let time = ['', 0];
+    $('table:eq(1)')
+        .find('tr:gt(0)')
+        .each(function () {
+            let year = $(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text();
+            let sem = parseInt(
+                $(this).find(`td:eq(${COL_INDEX.COURSE_SEMESTER})`).text()
+            );
+            if (time[0] !== year || time[1] !== sem) {
+                // 只负责插入UI，数据由updateSemScores负责
+                $(this).before(buildSemInfoRowHtml({ year, sem }));
+            }
+            time = [year, sem];
+        });
+
+    // 浮动体宽度和位置自适应表格可见宽度
+    setTimeout(() => {
+        const $table = $('table:eq(1)');
+        const $container = $table.parent();
+
+        function updateInfoBlockPos() {
+            const visibleWidth = $container.width();
+            const scrollLeft = $container.scrollLeft();
+            $table.find('.x-info-block').each(function () {
+                const $block = $(this);
+                // 居中显示，宽度为容器的90%
+                const width = visibleWidth * 0.9;
+                const left = scrollLeft + (visibleWidth - width) / 2;
+                $block.css({
+                    left: left + 'px',
+                    width: width + 'px',
+                });
+            });
+        }
+
+        $container.off('.xinfowidth').on('scroll.xinfowidth resize.xinfowidth', updateInfoBlockPos);
+        $(window).off('.xinfowidth').on('resize.xinfowidth', updateInfoBlockPos);
+        updateInfoBlockPos();
+    }, 0);
+}
+
+/**
  * 配置选项按钮，选项多选框等静态控件
  * @param {Array} catsList 未去重课程类别列表。因为配置动态UI可能会执行多次，所以不在配置动态UI进行去重
  */
@@ -149,37 +194,43 @@ function customStaticUI(catsList) {
 }
 
 /**
- * 构建学期信息行HTML
- * @param {jQuery} $row jQuery对象，表示成绩表格的行
- * @param {Object} opts {year, sem, credit, gpa, avgScore, semId}
+ * 构建学期信息行HTML（仅UI，数据由updateSemScores负责填充）
+ * @param {Object} opts {year, sem}
  * @returns {string} HTML字符串
  */
-function buildSemInfoRow($row, opts) {
-    $row.before(`
+function buildSemInfoRowHtml(opts) {
+    let semId = `x-sem-check-${opts.year}-${opts.sem}`;
+    return `
       <tr class="x-sem-row">
           <td colspan="${COL_SPAN}" class="x-sem-info">
             <div class="x-info-block">
-              <div class="x-info-detail">
-                <strong>${opts.year}</strong>学年&nbsp;第<strong>${opts.sem}</strong>学期
+              <div class="x-info-wrapper">
+                <span class="x-info" id="x-sem-year">${opts.year}</span>
+                <strong>学年</strong>
               </div>
-              <div class="x-info-detail">
-                <label class="x-info-detail-label">学分数：</label>
-                <span class="x-info-num">${opts.credit}</span>
+              <div class="x-info-wrapper">
+                <strong>第</strong>
+                <span class="x-info" id="x-sem-sem">${opts.sem}</span>
+                <strong>学期</strong>
               </div>
-              <div class="x-info-detail">
-                <label class="x-info-detail-label">平均GPA：</label>
-                <span class="x-info-num">${opts.gpa}</span>
+              <div class="x-info-wrapper">
+                <strong>学分数：</strong>
+                <span class="x-info" id="x-sem-credits-${opts.year}-${opts.sem}"></span>
               </div>
-              <div class="x-info-detail">
-                <label class="x-info-detail-label">平均成绩：</label>
-                <span class="x-info-num">${opts.avgScore}</span>
+              <div class="x-info-wrapper">
+                <strong>平均GPA：</strong>
+                <span class="x-info" id="x-sem-gpa-${opts.year}-${opts.sem}"></span>
+              </div>
+              <div class="x-info-wrapper">
+                <strong>平均成绩：</strong>
+                <span class="x-info" id="x-sem-avgscore-${opts.year}-${opts.sem}"></span>
               </div>
               <div class="x-info-check-wrapper">
-                <label for="${opts.semId}">本学期全选</label>
-                <input type="checkbox" name="x-sem-checkbox" value="${opts.year}|${opts.sem}" id="${opts.semId}" checked />
+                <label for="${semId}">本学期全选</label>
+                <input type="checkbox" name="x-sem-checkbox" value="${opts.year}|${opts.sem}" id="${semId}" checked />
               </div>
             </div>
           </td>
       </tr>
-    `);
+    `;
 }

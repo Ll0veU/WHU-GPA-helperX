@@ -28,7 +28,17 @@ function calcGPA(scores) {
         scoreMean = totalScore / totalCredits;
     }
 
-    return [totalCredits.toFixed(1), GPAMean.toFixed(3), scoreMean.toFixed(3)];
+    function padIntPart(numStr, width = 3) {
+        const [intPart, decPart] = numStr.split('.');
+        return intPart.padStart(width, ' ');
+    }
+    const creditRaw = Number(totalCredits).toFixed(1);
+    const gpaRaw = Number(GPAMean).toFixed(3);
+    const avgScoreRaw = Number(scoreMean).toFixed(3);
+    const credit = `${padIntPart(creditRaw, 3)}.${creditRaw.split('.')[1]}`;
+    const gpa = `${padIntPart(gpaRaw, 3)}.${gpaRaw.split('.')[1]}`;
+    const avgScore = `${padIntPart(avgScoreRaw, 3)}.${avgScoreRaw.split('.')[1]}`;
+    return [credit, gpa, avgScore];
 }
 
 /**
@@ -44,7 +54,7 @@ function calcSemGPA(year, sem) {
             $(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text() === year &&
             parseInt(
                 $(this).find(`td:eq(${COL_INDEX.COURSE_SEMESTER})`).text()
-            ) === sem
+            ) === Number(sem)
         ) {
             // 学分，GPA，成绩
             let row = [];
@@ -94,54 +104,48 @@ function updateHeaderScores() {
     $('#x-credits').text(info[0]);
     $('#x-gpa').text(info[1]);
     $('#x-average-score').text(info[2]);
+    if ($('input[name="x-course-select"]:checked').length > 0) {
+        $('#x-sel-all').text('全不选');
+    } else {
+        $('#x-sel-all').text('全选');
+    }
+}
+
+/**
+ * 更新一个学期的成绩信息
+ * @param {string} year 学年
+ * @param {number} sem 整型数据，范围为[1, 3]，对应第几个学期
+ */
+function updateSemScore(year, sem) {
+    let info = calcSemGPA(year, sem);
+    $('#x-sem-credits-' + year + '-' + sem).text(info[0]);
+    $('#x-sem-gpa-' + year + '-' + sem).text(info[1]);
+    $('#x-sem-avgscore-' + year + '-' + sem).text(info[2]);
 }
 
 /**
  * 更新每学期的成绩信息
  */
-function updateSemScores() {
-    let semCount = $('tr.x-sem-row').length;
-    for (let i = 0; i < semCount; i++) {
-        let scores = [];
-        $('tr.x-sem-row')
-            .eq(i)
-            .nextUntil('tr.x-sem-row')
-            .each(function () {
-                let row = [];
-                if (
-                    $(this).find('input[name="x-course-select"]').is(':checked')
-                ) {
-                    let credit = $.trim(
-                        $(this)
-                            .find(`td:eq(${COL_INDEX.COURSE_CREDITS})`)
-                            .text()
-                    ); // 学分
-                    let gpa = $.trim(
-                        $(this).find(`td:eq(${COL_INDEX.COURSE_GPA})`).text()
-                    ); // GPA
-                    let score = $.trim(
-                        $(this).find(`td:eq(${COL_INDEX.COURSE_SCORE})`).text()
-                    ); // 成绩
-                    row = [credit, gpa, score];
-                    scores.push(row);
-                }
-            });
-        let info = calcGPA(scores);
-        $(`tr.x-sem-row:eq(${i}) span`).each(function (idx, _) {
-            $(this).text(info[idx]);
+function updateAllSemScores() {
+    let time = ['', 0];
+    $('table:eq(1)')
+        .find('tr:gt(0)')
+        .each(function () {
+            let year = $(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text();
+            let sem = parseInt(
+                $(this).find(`td:eq(${COL_INDEX.COURSE_SEMESTER})`).text()
+            );
+            if (time[0] !== year || time[1] !== sem) {
+                updateSemScore(year, sem);
+            }
+            time = [year, sem];
         });
-    }
 }
 
 /**
  * 更新界面上的所有成绩信息
  */
 function updateAllScores() {
-    if ($('input[name="x-course-select"]:checked').length > 0) {
-        $('#x-sel-all').text('全不选');
-    } else {
-        $('#x-sel-all').text('全选');
-    }
     updateHeaderScores();
-    updateSemScores();
+    updateAllSemScores();
 }

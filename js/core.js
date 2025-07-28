@@ -105,18 +105,25 @@ function customDynamicUI() {
             $(this).find(`td:eq(${COL_INDEX.COURSE_SCORE})`).text()
         );
 
+        const year = $.trim(
+            $(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text()
+        );
+        const sem = $.trim(
+            $(this).find(`td:eq(${COL_INDEX.COURSE_SEMESTER})`).text()
+        );
+
         // 撤销课程（成绩为'W'）默认不选中，且不加入课程类别列表
         if (scoreText === 'W') {
             $(this)
                 .find(`td:eq(${COL_INDEX.COURSE_CODE})`)
-                .html(`<input type="checkbox" name="x-course-select" />`);
+                .html(`<input type="checkbox" name="x-course-select" value="${year}|${sem}|${scoreText}" />`);
         } else {
             const score = parseFloat(scoreText);
             if (score >= 60.0) {
                 $(this)
                     .find(`td:eq(${COL_INDEX.COURSE_CODE})`)
                     .html(
-                        `<input type="checkbox" name="x-course-select" checked="checked" />`
+                        `<input type="checkbox" name="x-course-select" value="${year}|${sem}|${scoreText}" checked="checked" />`
                     );
 
                 const courseCat = $.trim(
@@ -146,7 +153,7 @@ function customDynamicUI() {
             } else {
                 $(this)
                     .find(`td:eq(${COL_INDEX.COURSE_CODE})`)
-                    .html(`<input type="checkbox" name="x-course-select" />`);
+                    .html(`<input type="checkbox" name="x-course-select" value="${year}|${sem}|${scoreText}" />`);
             }
         }
     });
@@ -158,31 +165,6 @@ function customDynamicUI() {
  * 对返回成绩进行重新排序，添加每学期的信息显示栏
  */
 function sortScores() {
-    // 浮动体宽度和位置自适应表格可见宽度
-    setTimeout(() => {
-        const $table = $('table:eq(1)');
-        const $container = $table.parent();
-
-        function updateInfoBlockPos() {
-            const visibleWidth = $container.width();
-            const scrollLeft = $container.scrollLeft();
-            $table.find('.x-info-block').each(function () {
-                const $block = $(this);
-                // 居中显示，宽度为容器的90%
-                const width = visibleWidth * 0.9;
-                const left = scrollLeft + (visibleWidth - width) / 2;
-                $block.css({
-                    left: left + 'px',
-                    width: width + 'px',
-                });
-            });
-        }
-
-        $container.off('.xinfowidth').on('scroll.xinfowidth resize.xinfowidth', updateInfoBlockPos);
-        $(window).off('.xinfowidth').on('resize.xinfowidth', updateInfoBlockPos);
-        updateInfoBlockPos();
-    }, 0);
-
     // 构建完整的排序配置
     const { sortModes, sortOrder } = buildSortConfig();
 
@@ -196,40 +178,7 @@ function sortScores() {
     rows.splice(0, 0, $('table:eq(1)').find('tr:eq(0)'));
     $('table:eq(1)').children('tbody').empty().html(rows);
 
-    let time = ['', 0];
-    $('table:eq(1)')
-        .find('tr:gt(0)')
-        .each(function () {
-            let year = $(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text();
-            let sem = parseInt(
-                $(this).find(`td:eq(${COL_INDEX.COURSE_SEMESTER})`).text()
-            );
-            if (time[0] !== year || time[1] !== sem) {
-                let semGPA = calcSemGPA(year, sem);
-                let semId = `x-sem-check-${year}-${sem}`;
-                // 保留3位小数，整数部分宽度为width位，只占位
-                function padIntPart(numStr, width = 3) {
-                    const [intPart, decPart] = numStr.split('.');
-                    return intPart.padStart(width, ' ');
-                }
-                const creditRaw = Number(semGPA[0]).toFixed(1);
-                const gpaRaw = Number(semGPA[1]).toFixed(3);
-                const avgScoreRaw = Number(semGPA[2]).toFixed(3);
-                const credit = `${padIntPart(creditRaw, 2)}.${creditRaw.split('.')[1]}`;
-                const gpa = `${padIntPart(gpaRaw, 3)}.${gpaRaw.split('.')[1]}`;
-                const avgScore = `${padIntPart(avgScoreRaw, 3)}.${avgScoreRaw.split('.')[1]}`;
-                buildSemInfoRow(
-                    $(this), {
-                    year,
-                    sem,
-                    credit,
-                    gpa,
-                    avgScore,
-                    semId
-                });
-            }
-            time = [year, sem];
-        });
+    addSemInfoRow();
 
     updateCategoryCheckboxes();
     updateSemCheckboxes();

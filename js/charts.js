@@ -33,15 +33,13 @@ function updateStatistics() {
             if ($(this).hasClass('x-sem-row')) {
                 // x-sem-row: 直接从.x-info-block内部结构提取
                 const $block = $(this).find('.x-info-block');
-                // 学年学期
-                const [year, sem] = $block.find('strong').toArray().map(el => $(el).text());
-                // 学分、gpa、平均分
-                const [credit, gpa, avgScore] = $block.find('.x-info-detail .x-info-num').toArray().map(el => parseFloat($(el).text()));
+                // 提取所有 class='x-info' 的 span 的文本内容
+                const [year, sem, credit, gpa, avgScore] = $block.find('span.x-info').toArray().map(el => $(el).text());
                 trendingArray.push([
                     year + '-' + sem,
-                    credit,
-                    gpa,
-                    avgScore,
+                    Number(credit),
+                    Number(gpa),
+                    Number(avgScore),
                 ]);
             } else {
                 if (

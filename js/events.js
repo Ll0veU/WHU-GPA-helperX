@@ -78,10 +78,13 @@ function bindEvents() {
 
 // 响应表格中的复选框
 function _bindCourseSelectChangeEvent() {
-    $('input[name="x-course-select"]').change(() => {
+    $('input[name="x-course-select"]').change(e => {
+        const input = e.target;
+        const [year, sem, score] = input.value.split('|');
         updateCategoryCheckboxes();
         updateSemCheckboxes();
-        updateAllScores();
+        updateHeaderScores();
+        updateSemScore(year, sem);
     });
 }
 
@@ -140,7 +143,8 @@ function _bindSemCheckboxChangeEvent() {
             }
         });
         updateCategoryCheckboxes();
-        updateAllScores();
+        updateHeaderScores();
+        updateSemScore(year, sem);
     });
 }
 
