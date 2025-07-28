@@ -90,6 +90,8 @@
 .x-info-wrapper span {
     color: #0076c1;
     font-weight: bold;
+    font-family: typewriter;
+    white-space: pre;
 }
 
 .x-sem-row {

@@ -1,6 +1,6 @@
 /**
  * 计算传入课程的总学分数，平均GPA，平均分
- * @param {number[][3]} scores 包含需要计算的每门课程的[学分，GPA，成绩]的 float 数组
+ * @param {string[][3]} scores 包含需要计算的每门课程的[学分，GPA，成绩]的 string 数组
  * @returns 返回一个含三个元素的数组，分别对应总学分数，平均GPA，平均分
  */
 function calcGPA(scores) {
@@ -36,7 +36,7 @@ function calcGPA(scores) {
     const gpaRaw = Number(GPAMean).toFixed(3);
     const avgScoreRaw = Number(scoreMean).toFixed(3);
     const credit = `${padIntPart(creditRaw, 3)}.${creditRaw.split('.')[1]}`;
-    const gpa = `${padIntPart(gpaRaw, 3)}.${gpaRaw.split('.')[1]}`;
+    const gpa = `${padIntPart(gpaRaw, 1)}.${gpaRaw.split('.')[1]}`;
     const avgScore = `${padIntPart(avgScoreRaw, 3)}.${avgScoreRaw.split('.')[1]}`;
     return [credit, gpa, avgScore];
 }
@@ -44,17 +44,15 @@ function calcGPA(scores) {
 /**
  * 计算某学年某学期的总学分数，平均GPA，平均分
  * @param {string} year 学年
- * @param {number} sem 整型数据，范围为[1, 3]，对应第几个学期
+ * @param {string} sem 范围为{'1', '2', '3'}，对应第几个学期
  * @returns 返回一个含三个元素的数组，分别对应学年学期总学分数，平均GPA，平均分
  */
 function calcSemGPA(year, sem) {
     let scores = [];
     $('table:eq(1) tr:gt(0)').each(function () {
         if (
-            $(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text() === year &&
-            parseInt(
-                $(this).find(`td:eq(${COL_INDEX.COURSE_SEMESTER})`).text()
-            ) === Number(sem)
+            $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text()) === year &&
+            $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_SEMESTER})`).text()) === sem
         ) {
             // 学分，GPA，成绩
             let row = [];
@@ -100,7 +98,6 @@ function updateHeaderScores() {
     });
 
     let info = calcGPA(scores);
-
     $('#x-credits').text(info[0]);
     $('#x-gpa').text(info[1]);
     $('#x-average-score').text(info[2]);
@@ -114,7 +111,7 @@ function updateHeaderScores() {
 /**
  * 更新一个学期的成绩信息
  * @param {string} year 学年
- * @param {number} sem 整型数据，范围为[1, 3]，对应第几个学期
+ * @param {string} sem 范围为{'1', '2', '3'}，对应第几个学期
  */
 function updateSemScore(year, sem) {
     let info = calcSemGPA(year, sem);
@@ -127,14 +124,12 @@ function updateSemScore(year, sem) {
  * 更新每学期的成绩信息
  */
 function updateAllSemScores() {
-    let time = ['', 0];
+    let time = ['', ''];
     $('table:eq(1)')
         .find('tr:gt(0)')
         .each(function () {
-            let year = $(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text();
-            let sem = parseInt(
-                $(this).find(`td:eq(${COL_INDEX.COURSE_SEMESTER})`).text()
-            );
+            let year = $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text());
+            let sem = $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_SEMESTER})`).text());
             if (time[0] !== year || time[1] !== sem) {
                 updateSemScore(year, sem);
             }
