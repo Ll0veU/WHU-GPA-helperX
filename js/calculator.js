@@ -8,9 +8,9 @@ function calcGPA(scores) {
         totalGPA = 0,
         totalScore = 0;
     $(scores).each(function () {
-        let credit = parseFloat($(this)[0]);
-        let GPA = parseFloat($(this)[1]);
-        let score = parseFloat($(this)[2]);
+        let credit = parseFloat(Number($(this)[0]));
+        let GPA = parseFloat(Number($(this)[1]));
+        let score = parseFloat(Number($(this)[2]));
 
         if (score) {
             // if not NaN
@@ -49,10 +49,10 @@ function calcGPA(scores) {
  */
 function calcSemGPA(year, sem) {
     let scores = [];
-    $('table:eq(1) tr:gt(0)').each(function () {
+    $('table:eq(1) tr:gt(0)[role="row"]').each(function () {
         if (
-            $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text()) === year &&
-            $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_SEMESTER})`).text()) === sem
+            $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text()) === $.trim(year) &&
+            $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_SEMESTER})`).text()) === $.trim(sem)
         ) {
             // 学分，GPA，成绩
             let row = [];
@@ -129,7 +129,13 @@ function updateAllSemScores() {
         .find('tr:gt(0)')
         .each(function () {
             let year = $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text());
+            if (year.length !== 9) {
+                return;
+            }
             let sem = $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_SEMESTER})`).text());
+            if (!['1', '2', '3'].includes(sem)) {
+                return;
+            }
             if (time[0] !== year || time[1] !== sem) {
                 updateSemScore(year, sem);
             }

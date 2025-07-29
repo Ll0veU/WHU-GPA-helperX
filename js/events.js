@@ -12,7 +12,7 @@ function updateCategoryCheckboxes() {
         let hasCourse = false;
         $('table:eq(1) tr:gt(0)').each(function () {
             if (
-                $(this).find(`td:eq(${COL_INDEX.COURSE_CATEGORY})`).text() === category
+                $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_CATEGORY})`).text()) === $.trim(category)
             ) {
                 hasCourse = true;
                 if (!$(this).find(`td:eq(${COL_INDEX.COURSE_CODE}) input[name="x-course-select"]`).prop('checked')) {
@@ -44,8 +44,8 @@ function updateSemCheckboxes() {
         let hasCourse = false;
         $('table:eq(1) tr:gt(0)').each(function () {
             if (
-                $(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text() === year &&
-                $(this).find(`td:eq(${COL_INDEX.COURSE_SEMESTER})`).text() === sem
+                $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text()) === $.trim(year) &&
+                $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_SEMESTER})`).text()) === $.trim(sem)
             ) {
                 hasCourse = true;
                 if (!$(this).find(`td:eq(${COL_INDEX.COURSE_CODE}) input[name="x-course-select"]`).prop('checked')) {
@@ -94,8 +94,8 @@ function _bindSelboxChangeEvent() {
         const input = e.target;
         $('table:eq(1) tr:gt(0)').each(function () {
             if (
-                $(this).find(`td:eq(${COL_INDEX.COURSE_CATEGORY})`).text() ===
-                input.value
+                $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_CATEGORY})`).text()) ===
+                $.trim(input.value)
             ) {
                 const score = $.trim(
                     $(this).find(`td:eq(${COL_INDEX.COURSE_SCORE})`).text()
@@ -125,8 +125,8 @@ function _bindSemCheckboxChangeEvent() {
         // 只操作本学期内的课程checkbox
         $('table:eq(1) tr:gt(0)').each(function () {
             if (
-                $(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text() === year &&
-                $(this).find(`td:eq(${COL_INDEX.COURSE_SEMESTER})`).text() === sem
+                $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text()) === $.trim(year) &&
+                $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_SEMESTER})`).text()) === $.trim(sem)
             ) {
                 const scoreText = $.trim(
                     $(this).find(`td:eq(${COL_INDEX.COURSE_SCORE})`).text()
