@@ -1,13 +1,13 @@
 /**
  * 计算传入课程的总学分数，平均GPA，平均分
- * @param {string[][3]} scores 包含需要计算的每门课程的[学分，GPA，成绩]的 string 数组
+ * @param {string[][3]} course_data 包含需要计算的每门课程的[学分，GPA，成绩]的 string 数组
  * @returns 返回一个含三个元素的数组，分别对应总学分数，平均GPA，平均分
  */
-function calcGPA(scores) {
+function calcGPA(course_data) {
     let totalCredits = 0,
         totalGPA = 0,
         totalScore = 0;
-    $(scores).each(function () {
+    $(course_data).each(function () {
         let credit = parseFloat(Number($(this)[0]));
         let GPA = parseFloat(Number($(this)[1]));
         let score = parseFloat(Number($(this)[2]));
@@ -28,16 +28,13 @@ function calcGPA(scores) {
         scoreMean = totalScore / totalCredits;
     }
 
-    function padIntPart(numStr, width = 3) {
+    function padIntPart(numStr, int_width = 3) {
         const [intPart, decPart] = numStr.split('.');
-        return intPart.padStart(width, ' ');
+        return `${intPart.padStart(int_width, ' ')}.${decPart}`;
     }
-    const creditRaw = Number(totalCredits).toFixed(1);
-    const gpaRaw = Number(GPAMean).toFixed(3);
-    const avgScoreRaw = Number(scoreMean).toFixed(3);
-    const credit = `${padIntPart(creditRaw, 3)}.${creditRaw.split('.')[1]}`;
-    const gpa = `${padIntPart(gpaRaw, 1)}.${gpaRaw.split('.')[1]}`;
-    const avgScore = `${padIntPart(avgScoreRaw, 3)}.${avgScoreRaw.split('.')[1]}`;
+    const credit = padIntPart(Number(totalCredits).toFixed(1), 3);
+    const gpa = padIntPart(Number(GPAMean).toFixed(3), 1);
+    const avgScore = padIntPart(Number(scoreMean).toFixed(3), 3);
     return [credit, gpa, avgScore];
 }
 
@@ -48,7 +45,7 @@ function calcGPA(scores) {
  * @returns 返回一个含三个元素的数组，分别对应学年学期总学分数，平均GPA，平均分
  */
 function calcSemGPA(year, sem) {
-    let scores = [];
+    let sem_courses_data = [];
     $('table:eq(1) tr:gt(0)[role="row"]').each(function () {
         if (
             $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text()) === $.trim(year) &&
@@ -67,12 +64,12 @@ function calcSemGPA(year, sem) {
                     $(this).find(`td:eq(${COL_INDEX.COURSE_SCORE})`).text()
                 ); // 成绩
                 row = [credit, gpa, score];
-                scores.push(row);
+                sem_courses_data.push(row);
             }
         }
     });
 
-    return calcGPA(scores);
+    return calcGPA(sem_courses_data);
 }
 
 /**
@@ -115,9 +112,9 @@ function updateHeaderScores() {
  */
 function updateSemScore(year, sem) {
     let info = calcSemGPA(year, sem);
-    $('#x-sem-credits-' + year + '-' + sem).text(info[0]);
-    $('#x-sem-gpa-' + year + '-' + sem).text(info[1]);
-    $('#x-sem-avgscore-' + year + '-' + sem).text(info[2]);
+    $('#x-sem-credits-' + year + '-' + sem).html(info[0]);
+    $('#x-sem-gpa-' + year + '-' + sem).html(info[1]);
+    $('#x-sem-avgscore-' + year + '-' + sem).html(info[2]);
 }
 
 /**

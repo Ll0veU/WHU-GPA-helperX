@@ -138,6 +138,7 @@ function addSemInfoRow() {
         const $container = $table.parent();
 
         function updateInfoBlockPos() {
+            // console.count('updateInfoBlockPos');
             const visibleWidth = $container.width();
             const scrollLeft = $container.scrollLeft();
             $table.find('.x-info-block').each(function () {
@@ -152,10 +153,14 @@ function addSemInfoRow() {
             });
         }
 
-        $container.off('.xinfowidth').on('scroll.xinfowidth resize.xinfowidth', updateInfoBlockPos);
-        $(window).off('.xinfowidth').on('resize.xinfowidth', updateInfoBlockPos);
+        // 监听容器和表格的尺寸变化，调整浮动块位置
+        const resizeObserver = new ResizeObserver(updateInfoBlockPos);
+        resizeObserver.observe($container[0]);
+        resizeObserver.observe($table[0]);
+
+        // 初始位置调整
         updateInfoBlockPos();
-    }, 0);
+    }, 500);
 }
 
 /**
