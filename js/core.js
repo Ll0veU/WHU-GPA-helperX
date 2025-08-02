@@ -16,7 +16,7 @@ $.ajaxSetup({
                 faculty = response['items'][0]['jgmc'];
                 fromUpdateGrades = true;
             }
-        } catch (error) { }
+        } catch (error) {}
         return data;
     },
 });
@@ -116,7 +116,9 @@ function customDynamicUI() {
         if (scoreText === 'W') {
             $(this)
                 .find(`td:eq(${COL_INDEX.COURSE_CODE})`)
-                .html(`<input type="checkbox" name="x-course-select" value="${year}|${sem}|${scoreText}" />`);
+                .html(
+                    `<input type="checkbox" name="x-course-select" value="${year}|${sem}|${scoreText}" />`
+                );
         } else {
             const score = parseFloat(scoreText);
             if (score >= 60.0) {
@@ -153,7 +155,9 @@ function customDynamicUI() {
             } else {
                 $(this)
                     .find(`td:eq(${COL_INDEX.COURSE_CODE})`)
-                    .html(`<input type="checkbox" name="x-course-select" value="${year}|${sem}|${scoreText}" />`);
+                    .html(
+                        `<input type="checkbox" name="x-course-select" value="${year}|${sem}|${scoreText}" />`
+                    );
             }
         }
     });

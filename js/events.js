@@ -12,10 +12,18 @@ function updateCategoryCheckboxes() {
         let hasCourse = false;
         $('table:eq(1) tr:gt(0)').each(function () {
             if (
-                $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_CATEGORY})`).text()) === $.trim(category)
+                $.trim(
+                    $(this).find(`td:eq(${COL_INDEX.COURSE_CATEGORY})`).text()
+                ) === $.trim(category)
             ) {
                 hasCourse = true;
-                if (!$(this).find(`td:eq(${COL_INDEX.COURSE_CODE}) input[name="x-course-select"]`).prop('checked')) {
+                if (
+                    !$(this)
+                        .find(
+                            `td:eq(${COL_INDEX.COURSE_CODE}) input[name="x-course-select"]`
+                        )
+                        .prop('checked')
+                ) {
                     allChecked = false;
                 }
             }
@@ -44,11 +52,21 @@ function updateSemCheckboxes() {
         let hasCourse = false;
         $('table:eq(1) tr:gt(0)').each(function () {
             if (
-                $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text()) === $.trim(year) &&
-                $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_SEMESTER})`).text()) === $.trim(sem)
+                $.trim(
+                    $(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text()
+                ) === $.trim(year) &&
+                $.trim(
+                    $(this).find(`td:eq(${COL_INDEX.COURSE_SEMESTER})`).text()
+                ) === $.trim(sem)
             ) {
                 hasCourse = true;
-                if (!$(this).find(`td:eq(${COL_INDEX.COURSE_CODE}) input[name="x-course-select"]`).prop('checked')) {
+                if (
+                    !$(this)
+                        .find(
+                            `td:eq(${COL_INDEX.COURSE_CODE}) input[name="x-course-select"]`
+                        )
+                        .prop('checked')
+                ) {
                     allChecked = false;
                 }
             }
@@ -94,8 +112,9 @@ function _bindSelboxChangeEvent() {
         const input = e.target;
         $('table:eq(1) tr:gt(0)').each(function () {
             if (
-                $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_CATEGORY})`).text()) ===
-                $.trim(input.value)
+                $.trim(
+                    $(this).find(`td:eq(${COL_INDEX.COURSE_CATEGORY})`).text()
+                ) === $.trim(input.value)
             ) {
                 const score = $.trim(
                     $(this).find(`td:eq(${COL_INDEX.COURSE_SCORE})`).text()
@@ -119,33 +138,41 @@ function _bindSelboxChangeEvent() {
 
 // 响应学期全选复选框
 function _bindSemCheckboxChangeEvent() {
-    $('input[name="x-sem-checkbox"]').off('change.sem').on('change.sem', function (e) {
-        const input = e.target;
-        const [year, sem] = input.value.split('|');
-        // 只操作本学期内的课程checkbox
-        $('table:eq(1) tr:gt(0)').each(function () {
-            if (
-                $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text()) === $.trim(year) &&
-                $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_SEMESTER})`).text()) === $.trim(sem)
-            ) {
-                const scoreText = $.trim(
-                    $(this).find(`td:eq(${COL_INDEX.COURSE_SCORE})`).text()
-                );
-                const checkbox = $(this).find(
-                    `td:eq(${COL_INDEX.COURSE_CODE}) input[name="x-course-select"]`
-                );
-                // 撤销课程（成绩为'W'）永远不被选中
-                if (scoreText === 'W') {
-                    checkbox.prop('checked', false);
-                } else {
-                    checkbox.prop('checked', input.checked);
+    $('input[name="x-sem-checkbox"]')
+        .off('change.sem')
+        .on('change.sem', function (e) {
+            const input = e.target;
+            const [year, sem] = input.value.split('|');
+            // 只操作本学期内的课程checkbox
+            $('table:eq(1) tr:gt(0)').each(function () {
+                if (
+                    $.trim(
+                        $(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text()
+                    ) === $.trim(year) &&
+                    $.trim(
+                        $(this)
+                            .find(`td:eq(${COL_INDEX.COURSE_SEMESTER})`)
+                            .text()
+                    ) === $.trim(sem)
+                ) {
+                    const scoreText = $.trim(
+                        $(this).find(`td:eq(${COL_INDEX.COURSE_SCORE})`).text()
+                    );
+                    const checkbox = $(this).find(
+                        `td:eq(${COL_INDEX.COURSE_CODE}) input[name="x-course-select"]`
+                    );
+                    // 撤销课程（成绩为'W'）永远不被选中
+                    if (scoreText === 'W') {
+                        checkbox.prop('checked', false);
+                    } else {
+                        checkbox.prop('checked', input.checked);
+                    }
                 }
-            }
+            });
+            updateCategoryCheckboxes();
+            updateHeaderScores();
+            updateSemScore(year, sem);
         });
-        updateCategoryCheckboxes();
-        updateHeaderScores();
-        updateSemScore(year, sem);
-    });
 }
 
 // 全选/全不选

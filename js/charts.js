@@ -34,7 +34,10 @@ function updateStatistics() {
                 // x-sem-row: 直接从.x-info-block内部结构提取
                 const $block = $(this).find('.x-info-block');
                 // 提取所有 class='x-info' 的 span 的文本内容
-                const [year, sem, credit, gpa, avgScore] = $block.find('span.x-info').toArray().map(el => $(el).text());
+                const [year, sem, credit, gpa, avgScore] = $block
+                    .find('span.x-info')
+                    .toArray()
+                    .map(el => $(el).text());
                 trendingArray.push([
                     year + '-' + sem,
                     Number(credit),
