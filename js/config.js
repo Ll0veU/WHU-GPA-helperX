@@ -5,25 +5,53 @@ let fromUpdateGrades = false; // 标志请求是否为更新成绩表
 // 找到所有的role="columnheader"的th元素
 const headerThs = $('.ui-jqgrid-htable tr th[role="columnheader"]');
 // 获取表头的文本内容
-const headerTexts = headerThs.map((index, th) => {
-    return $(th).text().trim();
-}).get();
+const headerTexts = headerThs
+    .map((index, th) => {
+        return $(th).text().trim();
+    })
+    .get();
 
 // console.log('表头文本内容:', headerTexts);
 
 // 学期 GPA 摘要的列数
-const COL_SPAN = $('.ui-jqgrid-htable tr th[role="columnheader"]:not([style*="display: none"])').length;
+const COL_SPAN = $(
+    '.ui-jqgrid-htable tr th[role="columnheader"]:not([style*="display: none"])'
+).length;
 
 // 不同含义列的索引
 const COL_INDEX = {
-    COURSE_YEAR: headerTexts.indexOf('学年') !== -1 ? headerTexts.indexOf('学年') : undefined, // 学年
-    COURSE_SEMESTER: headerTexts.indexOf('学期') !== -1 ? headerTexts.indexOf('学期') : undefined, // 学期
-    COURSE_CODE: headerTexts.indexOf('课程代码') !== -1 ? headerTexts.indexOf('课程代码') : undefined, // 课程代码/选择框
-    COURSE_CATEGORY: headerTexts.indexOf('课程性质') !== -1 ? headerTexts.indexOf('课程性质') : undefined, // 课程类别
-    COURSE_CREDITS: headerTexts.indexOf('学分') !== -1 ? headerTexts.indexOf('学分') : undefined, // 学分
-    COURSE_SCORE: headerTexts.indexOf('成绩') !== -1 ? headerTexts.indexOf('成绩') : undefined, // 成绩
-    COURSE_GPA: headerTexts.indexOf('绩点') !== -1 ? headerTexts.indexOf('绩点') : undefined, // GPA
-    COURSE_INSTITUTION: headerTexts.indexOf('开课学院') !== -1 ? headerTexts.indexOf('开课学院') : undefined, // 开课学院
+    COURSE_YEAR:
+        headerTexts.indexOf('学年') !== -1
+            ? headerTexts.indexOf('学年')
+            : undefined, // 学年
+    COURSE_SEMESTER:
+        headerTexts.indexOf('学期') !== -1
+            ? headerTexts.indexOf('学期')
+            : undefined, // 学期
+    COURSE_CODE:
+        headerTexts.indexOf('课程代码') !== -1
+            ? headerTexts.indexOf('课程代码')
+            : undefined, // 课程代码/选择框
+    COURSE_CATEGORY:
+        headerTexts.indexOf('课程性质') !== -1
+            ? headerTexts.indexOf('课程性质')
+            : undefined, // 课程类别
+    COURSE_CREDITS:
+        headerTexts.indexOf('学分') !== -1
+            ? headerTexts.indexOf('学分')
+            : undefined, // 学分
+    COURSE_SCORE:
+        headerTexts.indexOf('成绩') !== -1
+            ? headerTexts.indexOf('成绩')
+            : undefined, // 成绩
+    COURSE_GPA:
+        headerTexts.indexOf('绩点') !== -1
+            ? headerTexts.indexOf('绩点')
+            : undefined, // GPA
+    COURSE_INSTITUTION:
+        headerTexts.indexOf('开课学院') !== -1
+            ? headerTexts.indexOf('开课学院')
+            : undefined, // 开课学院
 };
 
 // console.log('列索引:', COL_INDEX, '表头列数:', COL_SPAN);

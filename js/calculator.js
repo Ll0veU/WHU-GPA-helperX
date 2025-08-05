@@ -48,8 +48,11 @@ function calcSemGPA(year, sem) {
     let sem_courses_data = [];
     $('table:eq(1) tr:gt(0)[role="row"]').each(function () {
         if (
-            $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text()) === $.trim(year) &&
-            $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_SEMESTER})`).text()) === $.trim(sem)
+            $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text()) ===
+                $.trim(year) &&
+            $.trim(
+                $(this).find(`td:eq(${COL_INDEX.COURSE_SEMESTER})`).text()
+            ) === $.trim(sem)
         ) {
             // 学分，GPA，成绩
             let row = [];
@@ -125,11 +128,15 @@ function updateAllSemScores() {
     $('table:eq(1)')
         .find('tr:gt(0)')
         .each(function () {
-            let year = $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text());
+            let year = $.trim(
+                $(this).find(`td:eq(${COL_INDEX.COURSE_YEAR})`).text()
+            );
             if (year.length !== 9) {
                 return;
             }
-            let sem = $.trim($(this).find(`td:eq(${COL_INDEX.COURSE_SEMESTER})`).text());
+            let sem = $.trim(
+                $(this).find(`td:eq(${COL_INDEX.COURSE_SEMESTER})`).text()
+            );
             if (!['1', '2', '3'].includes(sem)) {
                 return;
             }
